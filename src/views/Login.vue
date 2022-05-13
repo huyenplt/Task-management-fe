@@ -14,7 +14,7 @@
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
           Don't have an account yet?
-          <router-link to="/dashboard" class="font-medium text-indigo-600 hover:text-indigo-500">Create a new account</router-link>
+          <router-link to="/register" class="font-medium text-indigo-600 hover:text-indigo-500">Create a new account</router-link>
         </p>
       </div>
       <form @submit.prevent="handleSubmit" class="mt-8 space-y-6">
@@ -102,54 +102,42 @@
 <script>
 import { useRouter } from "vue-router";
 import { useStore } from 'vuex';
-import { reactive, ref, computed } from 'vue'
+import { reactive, computed } from 'vue'
 
 // import { api_url } from '../../utils/const';
 
 export default {
   setup() {
+    const router = useRouter()
+    const store = useStore()
+
     const form = reactive({
       email: "",
       password: "",
     });
 
+    const loggedIn = store.state.auth.status.loggedIn;
 
-    const router = useRouter()
-    const store = useStore()
+    if (loggedIn) {
+      router.push({name: "Dashboard"});
+    }
 
     const handleSubmit = async () => {
-      console.log(form);
       store.dispatch("auth/login", form).then(
         () => {
           router.push({name: "Dashboard"});
+
         },
         (error) => {
-          console.log("hhi:" , error.message)
+          console.log(error.message)
         }
       );
-
-      // router.push({name: "Dashboard"});
-      // try {
-      //   const response = await axios.post("http://127.0.0.1:8000/api/login", {
-      //     ...form,
-      //   });
-      //   const token = response.data.token;
-
-      //   // console.log(response.data.user);
-
-      //   sessionStorage.setItem("token", token);
-
-      //   store.dispatch("handleUserLogin", response.data.user);
-
-      //   router.push({name: "Dashboard"});
-      // } catch (err) {
-      //   console.log(err);
-      // }
     };
 
     return {
       form,
       handleSubmit,
+      loggedIn
     };
   },
 };

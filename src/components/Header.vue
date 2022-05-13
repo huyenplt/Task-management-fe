@@ -1,7 +1,7 @@
 <template>
   <!-- this header -->
   <header class="bg-white dark:bg-gray-800 p-2 border-b-2 dark:border-gray-700">
-    User: {{ user }}
+    User: {{ currentUser }}
     <div class="wrap-header flex items-center justify-between flex-wrap">
       <div class="flex flex-no-shrink items-center">
         <button
@@ -133,6 +133,7 @@
             </ul>
             <div class="py-1">
               <a
+                @click.prevent="handleLogout"
                 href="#"
                 class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-primary hover:text-white"
                 >Sign out</a
@@ -148,18 +149,39 @@
 <script>
   import { Icon } from "@iconify/vue";
   import { useStore } from 'vuex';
-  import { computed } from 'vue'
+  import { computed } from 'vue';
+  import { useRouter } from "vue-router";
+
+import axios from 'axios';
+import authHeader from '../services/auth-header';
+
+
+
 
   export default {
     setup() {
       const store = useStore();
+      const router = useRouter()
 
-      const user = computed(() => {
-        return store.getters.user
+      const currentUser = computed(() => {
+        return store.state.auth.user;
       })
 
+      console.log('fsjkhdd', currentUser)
+
+      const api = 'http://127.0.0.1:8000/api/projects'; 
+      let user = JSON.parse(localStorage.getItem('user'));
+
+      const token = user.token;
+
+      const handleLogout = () => {
+        store.dispatch('auth/logout');
+        router.push({name: "Login"});
+      }
+
       return {
-        user,
+        currentUser,
+        handleLogout
       }
     },
     data() {
