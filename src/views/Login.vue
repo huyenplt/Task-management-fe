@@ -100,9 +100,10 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import { reactive } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from 'vuex';
+import { reactive, ref, computed } from 'vue'
+
 // import { api_url } from '../../utils/const';
 
 export default {
@@ -112,25 +113,38 @@ export default {
       password: "",
     });
 
+
     const router = useRouter()
+    const store = useStore()
+
     const handleSubmit = async () => {
       console.log(form);
-      try {
-        const response = await axios.post("http://127.0.0.1:8000/api/login", {
-          ...form,
-        });
-        const token = response.data.token;
+      store.dispatch("auth/login", form).then(
+        () => {
+          router.push({name: "Dashboard"});
+        },
+        (error) => {
+          console.log("hhi:" , error.message)
+        }
+      );
 
-        // console.log(response.data.user);
+      // router.push({name: "Dashboard"});
+      // try {
+      //   const response = await axios.post("http://127.0.0.1:8000/api/login", {
+      //     ...form,
+      //   });
+      //   const token = response.data.token;
 
-        sessionStorage.setItem("token", token);
+      //   // console.log(response.data.user);
 
-        // this.$store.dispatch("handleUserLogin", response.data.user);
+      //   sessionStorage.setItem("token", token);
 
-        router.push({name: "Dashboard"});
-      } catch (err) {
-        console.log(err);
-      }
+      //   store.dispatch("handleUserLogin", response.data.user);
+
+      //   router.push({name: "Dashboard"});
+      // } catch (err) {
+      //   console.log(err);
+      // }
     };
 
     return {

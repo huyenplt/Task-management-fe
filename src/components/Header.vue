@@ -1,6 +1,7 @@
 <template>
   <!-- this header -->
   <header class="bg-white dark:bg-gray-800 p-2 border-b-2 dark:border-gray-700">
+    User: {{ user }}
     <div class="wrap-header flex items-center justify-between flex-wrap">
       <div class="flex flex-no-shrink items-center">
         <button
@@ -146,8 +147,21 @@
 
 <script>
   import { Icon } from "@iconify/vue";
-  import { mapGetters } from 'vuex';
+  import { useStore } from 'vuex';
+  import { computed } from 'vue'
+
   export default {
+    setup() {
+      const store = useStore();
+
+      const user = computed(() => {
+        return store.getters.user
+      })
+
+      return {
+        user,
+      }
+    },
     data() {
       return {
         menu: false,
@@ -156,13 +170,9 @@
     components: {
       Icon,
     },
-    computed: {
-      ...mapGetters(['user']),
-    },
     methods: {
       menuToggle: function () {
         this.menu = !this.menu;
-        console.log(user);
       },
       menuToggleBlur: function () {
         this.menu = false;
@@ -172,10 +182,6 @@
       },
     },
     mounted() {
-      async function getCurUser() {
-
-      };
-
       var themeToggleDarkIcon = document.getElementById(
         "theme-toggle-dark-icon"
       );
