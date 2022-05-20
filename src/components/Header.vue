@@ -30,7 +30,7 @@
         <h2
           class="text-md text-indigo-800 ml-3 lg:block hidden px-5 p-2 rounded-md bg-indigo-200"
         >
-          Welcome back, Mohammad Sahrullah
+          Welcome back, {{ currentUser.user.name }}
         </h2>
       </div>
       <div class="mr-5 flex">
@@ -103,7 +103,7 @@
           >
             <div class="py-3 px-4 text-sm text-gray-900 dark:text-gray-200">
               <div>Logged As</div>
-              <div class="font-medium truncate">Moh Sahrullah</div>
+              <div class="font-medium truncate">{{ currentUser.user.name }}</div>
             </div>
             <ul
               class="py-1 text-sm text-gray-700 dark:text-gray-200"
@@ -147,131 +147,122 @@
 </template>
 
 <script>
-  import { Icon } from "@iconify/vue";
-  import { useStore } from 'vuex';
-  import { computed } from 'vue';
-  import { useRouter } from "vue-router";
+import { Icon } from "@iconify/vue";
+import { useStore } from 'vuex';
+import { computed } from 'vue';
+import { useRouter } from "vue-router";
 
 import axios from 'axios';
 import authHeader from '../services/auth-header';
 
+export default {
+  setup() {
+    const store = useStore();
+    const router = useRouter()
 
+    const currentUser = computed(() => {
+      return store.state.auth.user;
+    })
 
+    const handleLogout = () => {
+      store.dispatch('auth/logout');
+      router.push({name: "Login"});
+    }
 
-  export default {
-    setup() {
-      const store = useStore();
-      const router = useRouter()
+    return {
+      currentUser,
+      handleLogout
+    }
+  },
 
-      const currentUser = computed(() => {
-        return store.state.auth.user;
-      })
-
-      console.log('fsjkhdd', currentUser)
-
-      const api = 'http://127.0.0.1:8000/api/projects'; 
-      let user = JSON.parse(localStorage.getItem('user'));
-
-      const token = user.token;
-
-      const handleLogout = () => {
-        store.dispatch('auth/logout');
-        router.push({name: "Login"});
-      }
-
-      return {
-        currentUser,
-        handleLogout
-      }
+  data() {
+    return {
+      menu: false,
+    };
+  },
+  components: {
+    Icon,
+  },
+  methods: {
+    menuToggle: function () {
+      this.menu = !this.menu;
     },
-    data() {
-      return {
-        menu: false,
-      };
+    menuToggleBlur: function () {
+      this.menu = false;
     },
-    components: {
-      Icon,
+    sidebarToggle: function () {
+      document.querySelector(".flex-sidebar").classList.remove("hidden");
     },
-    methods: {
-      menuToggle: function () {
-        this.menu = !this.menu;
-      },
-      menuToggleBlur: function () {
-        this.menu = false;
-      },
-      sidebarToggle: function () {
-        document.querySelector(".flex-sidebar").classList.remove("hidden");
-      },
-    },
-    mounted() {
-      var themeToggleDarkIcon = document.getElementById(
-        "theme-toggle-dark-icon"
-      );
-      var themeToggleLightIcon = document.getElementById(
-        "theme-toggle-light-icon"
-      );
+  },
+  mounted() {
+    var themeToggleDarkIcon = document.getElementById(
+      "theme-toggle-dark-icon"
+    );
+    var themeToggleLightIcon = document.getElementById(
+      "theme-toggle-light-icon"
+    );
 
-      // Change the icons inside the button based on previous settings
-      if (
-        localStorage.getItem("color-theme") === "dark" ||
-        !("color-theme" in localStorage)
-      ) {
-        document.documentElement.classList.add("dark");
-        themeToggleLightIcon.classList.remove("hidden");
-      } else {
-        document.documentElement.classList.remove("dark");
-        themeToggleDarkIcon.classList.remove("hidden");
-      }
+    // Change the icons inside the button based on previous settings
+    if (
+      localStorage.getItem("color-theme") === "dark" ||
+      !("color-theme" in localStorage)
+    ) {
+      document.documentElement.classList.add("dark");
+      themeToggleLightIcon.classList.remove("hidden");
+    } else {
+      document.documentElement.classList.remove("dark");
+      themeToggleDarkIcon.classList.remove("hidden");
+    }
 
-      // // if set via local storage previously
-      // if (!localStorage.getItem("color-theme")) {
-      //   if (localStorage.getItem("color-theme") === "light") {
-      //     document.documentElement.classList.add("dark");
-      //     localStorage.setItem("color-theme", "dark");
-      //   } else {
-      //     document.documentElement.classList.remove("dark");
-      //     localStorage.setItem("color-theme", "light");
-      //   }
+    // // if set via local storage previously
+    // if (!localStorage.getItem("color-theme")) {
+    //   if (localStorage.getItem("color-theme") === "light") {
+    //     document.documentElement.classList.add("dark");
+    //     localStorage.setItem("color-theme", "dark");
+    //   } else {
+    //     document.documentElement.classList.remove("dark");
+    //     localStorage.setItem("color-theme", "light");
+    //   }
 
-      // if NOT set via local storage previously
-      // } else {
-      //   if (document.documentElement.classList.contains("dark")) {
-      //     document.documentElement.classList.remove("dark");
-      //     localStorage.setItem("color-theme", "light");
-      //   } else {
-      //     document.documentElement.classList.add("dark");
-      //     localStorage.setItem("color-theme", "dark");
-      //   }
-      // }
+    // if NOT set via local storage previously
+    // } else {
+    //   if (document.documentElement.classList.contains("dark")) {
+    //     document.documentElement.classList.remove("dark");
+    //     localStorage.setItem("color-theme", "light");
+    //   } else {
+    //     document.documentElement.classList.add("dark");
+    //     localStorage.setItem("color-theme", "dark");
+    //   }
+    // }
 
-      var themeToggleBtn = document.getElementById("theme-toggle");
+    var themeToggleBtn = document.getElementById("theme-toggle");
 
-      themeToggleBtn.addEventListener("click", function () {
-        // toggle icons inside button
-        themeToggleDarkIcon.classList.toggle("hidden");
-        themeToggleLightIcon.classList.toggle("hidden");
+    themeToggleBtn.addEventListener("click", function () {
+      // toggle icons inside button
+      themeToggleDarkIcon.classList.toggle("hidden");
+      themeToggleLightIcon.classList.toggle("hidden");
 
-        // if set via local storage previously
-        if (localStorage.getItem("color-theme")) {
-          if (localStorage.getItem("color-theme") === "light") {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("color-theme", "dark");
-          } else {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("color-theme", "light");
-          }
-
-          // if NOT set via local storage previously
+      // if set via local storage previously
+      if (localStorage.getItem("color-theme")) {
+        if (localStorage.getItem("color-theme") === "light") {
+          document.documentElement.classList.add("dark");
+          localStorage.setItem("color-theme", "dark");
         } else {
-          if (document.documentElement.classList.contains("dark")) {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("color-theme", "light");
-          } else {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("color-theme", "dark");
-          }
+          document.documentElement.classList.remove("dark");
+          localStorage.setItem("color-theme", "light");
         }
-      });
-    },
-  };
+
+        // if NOT set via local storage previously
+      } else {
+        if (document.documentElement.classList.contains("dark")) {
+          document.documentElement.classList.remove("dark");
+          localStorage.setItem("color-theme", "light");
+        } else {
+          document.documentElement.classList.add("dark");
+          localStorage.setItem("color-theme", "dark");
+        }
+      }
+    });
+  },
+};
 </script>

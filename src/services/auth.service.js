@@ -19,14 +19,15 @@ class AuthService {
   }
 
   logout() {
-    console.log(authHeader())
+    // console.log(authHeader())
     axios
-      .post(API_URL + 'logout', { headers: authHeader() })
+      .post('http://127.0.0.1:8000/api/logout', { headers: authHeader() })
       .then(res => {
         console.log(res.data);})
       .catch((error) => {
         console.log(error)
       });
+
     localStorage.removeItem('user');
   }
 

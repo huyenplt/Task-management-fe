@@ -11,7 +11,11 @@ import Vbadges from "../views/components/badges.vue";
 import Vbreadcumb from "../views/components/breadcumbs.vue";
 import Vbutton from "../views/components/button.vue";
 import Vcard from "../views/components/card.vue";
-var appname = " - Windzo Dashboard Admin Template";
+
+import ProjectIndex from "../views/components/projectIndex.vue";
+import Project from "../views/components/projectDetail.vue";
+
+// var appname = " - Windzo Dashboard Admin Template";
 
 const routes = [
   // Routes
@@ -73,10 +77,21 @@ const routes = [
     component: Vcard,
     // meta: { title: "Card" + appname },
   },
+
+  {
+    path: "/projects",
+    name: "ProjectIndex",
+    component: ProjectIndex,
+  },
+  {
+    path: "/projects/:id",
+    name: "Project",
+    component: Project,
+  },
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes,
 
   linkExactActiveClass: "exact-active",
