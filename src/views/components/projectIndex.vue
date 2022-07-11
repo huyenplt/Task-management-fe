@@ -1,4 +1,5 @@
 <template>
+  <Modal />
   <div class="projects h-auto p-3">
     <div class="mt-5 w-full">
       <h1 class="text-2xl text-gray-900 font-medium dark:text-gray-200">
@@ -82,6 +83,7 @@
                     <button
                       type="button"
                       class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                      @click="deleteProject(project.id)"
                     >
                       Delete
                     </button>
@@ -97,21 +99,33 @@
 </template>
 
 <script>
+import Modal from './modal.vue'
 import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 
 export default {
+  components: {
+    Modal
+  },
   setup() {
     const store = useStore();
 
-    onMounted(store.dispatch("projectStore/fetch"));
+    store.dispatch("projectStore/fetch")
 
     const projects = computed(() => {
       return store.state.projectStore.projects;
     });
 
+
+    const deleteProject = async (id) => {
+      if (!window.confirm('You sure?')) {
+          return
+      }
+      store.dispatch("projectStore/deleteProject", id);
+    }
+
     return {
-      projects,
+      projects, deleteProject
     };
   },
 };
