@@ -1,20 +1,12 @@
 <template>
   <div>
-    <!-- Breadcrumb -->
-    <button
-      @click="open = true"
-      class="px-6 py-2 mt-3 font-medium tracking-wide text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
-    >
-      Open Modal
-    </button>
-
     <div
       :class="`modal ${
-        !open && 'opacity-0 pointer-events-none'
+        !openModal && 'opacity-0 pointer-events-none'
       } z-50 fixed w-full h-full top-0 left-0 flex items-center justify-center`"
     >
       <div
-        @click="open = false"
+        @click="$emit('closeModal')"
         class="absolute w-full h-full bg-gray-900 opacity-50 modal-overlay"
       ></div>
 
@@ -25,8 +17,13 @@
         <div class="px-6 py-4 text-left modal-content">
           <!--Title-->
           <div class="flex items-center justify-between pb-3">
-            <p class="text-2xl font-bold">Modal Title</p>
-            <div class="z-50 cursor-pointer modal-close" @click="open = false">
+            <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+              Create new project
+            </h3>
+            <div
+              class="z-50 cursor-pointer modal-close"
+              @click="$emit('closeModal')"
+            >
               <svg
                 class="text-black fill-current"
                 xmlns="http://www.w3.org/2000/svg"
@@ -40,40 +37,82 @@
               </svg>
             </div>
           </div>
+          <form @submit.prevent="createProject" class="space-y-6" action="#">
+            <div>
+              <label
+                for="title"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >Title</label
+              >
+              <input
+                type="text"
+                name="title"
+                id="title"
+                v-model="form.title"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                placeholder="title..."
+                required
+              />
+            </div>
 
-          <!--Body-->
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente
-            asperiores sint necessitatibus aspernatur laborum quod ad quibusdam
-            voluptate aliquid molestiae! Cumque voluptatem sint eum, quibusdam
-            cupiditate vero quis. Praesentium, et!
-          </p>
-
-          <!--Footer-->
-          <div class="flex justify-end pt-2">
-            <button
-              @click="open = false"
-              class="p-3 px-6 py-3 mr-2 text-indigo-500 bg-transparent rounded-lg hover:bg-gray-100 hover:text-indigo-400 focus:outline-none"
-            >
-              Close
-            </button>
-            <button
-              @click="open = false"
-              class="px-6 py-3 font-medium tracking-wide text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
-            >
-              Action
-            </button>
-          </div>
+            <div>
+              <label
+                for="description"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >Description</label
+              >
+              <textarea
+                type="text"
+                name="description"
+                id="description"
+                v-model="form.description"
+                placeholder="description..."
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+              />
+            </div>
+            <div class="flex justify-end pt-2">
+              <button
+                type="submit"
+                class="px-6 py-3 font-medium tracking-wide text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
+              >
+                Create
+              </button>
+              <button
+                @click="$emit('closeModal')"
+                type="button"
+                class="p-3 px-6 py-3 mr-2 text-indigo-500 bg-transparent rounded-lg hover:bg-gray-100 hover:text-indigo-400 focus:outline-none"
+              >
+                Close
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script>
+import { reactive } from 'vue'
 
-const open = ref(false)
+export default {
+  props: ["openModal"],
+  setup() {
+    const form = reactive ({
+        title: '',
+        description: '',
+    })
+
+    function createProject() {
+        store.dispatch('projectStore/addProject', form);
+    }
+
+    return {
+        form, createProject
+    }
+  },
+
+};
 </script>
 
 <style>

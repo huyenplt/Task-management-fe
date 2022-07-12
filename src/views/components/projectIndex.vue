@@ -1,5 +1,13 @@
 <template>
-  <Modal />
+  <button
+    @click="handleOpenModal"
+    class="px-6 py-2 mt-3 font-medium tracking-wide text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
+  >
+    Open Modal
+  </button>
+
+  <Modal :openModal="openModal" @closeModal="handleCloseModal" />
+
   <div class="projects h-auto p-3">
     <div class="mt-5 w-full">
       <h1 class="text-2xl text-gray-900 font-medium dark:text-gray-200">
@@ -63,15 +71,17 @@
                   </td>
                   <td
                     class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap"
-                  > 
-                  <router-link :to="{name: 'Project', params: { id: project.id }}">
-                  <button
-                      type="button"
-                      class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                  >
+                    <router-link
+                      :to="{ name: 'Project', params: { id: project.id } }"
                     >
-                      Show
-                    </button>
-                  </router-link>
+                      <button
+                        type="button"
+                        class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                      >
+                        Show
+                      </button>
+                    </router-link>
 
                     <button
                       type="button"
@@ -99,33 +109,48 @@
 </template>
 
 <script>
-import Modal from './modal.vue'
-import { computed, onMounted } from "vue";
+import Modal from "./modal.vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 
 export default {
   components: {
-    Modal
+    Modal,
   },
   setup() {
+    const openModal = ref(false);
     const store = useStore();
 
-    store.dispatch("projectStore/fetch")
+    // Get all projects data
+    store.dispatch("projectStore/fetch");
 
     const projects = computed(() => {
       return store.state.projectStore.projects;
     });
 
-
+    // Delete project
     const deleteProject = async (id) => {
-      if (!window.confirm('You sure?')) {
-          return
+      if (!window.confirm("You sure?")) {
+        return;
       }
       store.dispatch("projectStore/deleteProject", id);
+    };
+
+    // Toggle modal
+    function handleOpenModal() {
+      openModal.value = true;
+    }
+
+    function handleCloseModal() {
+      openModal.value = false;
     }
 
     return {
-      projects, deleteProject
+      projects,
+      deleteProject,
+      openModal,
+      handleOpenModal,
+      handleCloseModal,
     };
   },
 };

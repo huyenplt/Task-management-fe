@@ -46,12 +46,14 @@ export const projectStore = {
         //     })
         //     .then();
         // },
-        // addProduct({}, product) {
-        //     axios.post(`${RESOURCE_PRODUCT}`, {
-        //         name: product.name,
-        //         price: product.price,
-        //     })
-        //         .then();
-        // }
+
+        addProject({}, project) {
+            axios.post(API_URL, {
+                title: project.title,
+                description: project.description,
+            },
+            { headers: authHeader() })
+                .then();
+        }
     },
 }
